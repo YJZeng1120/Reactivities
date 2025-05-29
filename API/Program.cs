@@ -1,4 +1,6 @@
 using Application.Activities.Queries;
+using Application.Core;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -11,11 +13,17 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+// 註冊 CORS（跨來源資源共享）服務，讓 API 可以接受來自不同網域的請求（例如前端在 localhost:3000）
 builder.Services.AddCors();
+
+// 註冊 MediatR，並從 GetActivityList.Handler 所在的 Assembly 掃描所有的 Handler，自動加入 DI 容器
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<GetActivityList.Handler>());
 
-var app = builder.Build();
+// 註冊 AutoMapper，從 MappingProfiles 所在的 Assembly 掃描所有的 Mapping 設定檔（Profile 類別）
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
+var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.

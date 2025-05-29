@@ -1,6 +1,5 @@
 using Application.Activities.Queries;
 using Application.Core;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 

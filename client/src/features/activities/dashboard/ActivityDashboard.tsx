@@ -1,5 +1,6 @@
 import { Grid } from "@mui/material";
 import ActivityList from "./ActivityList";
+import ActivityFilters from "./ActivityFilters";
 
 export default function ActivityDashboard() {
   return (
@@ -7,10 +8,12 @@ export default function ActivityDashboard() {
       container
       spacing={3}
     >
-      <Grid size={7}>
+      <Grid size={8}>
         <ActivityList />
       </Grid>
-      <Grid size={5}>Activity filters go here</Grid>
+      <Grid size={4}>
+        <ActivityFilters />
+      </Grid>
     </Grid>
   );
 }

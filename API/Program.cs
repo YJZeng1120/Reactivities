@@ -1,5 +1,7 @@
 using Application.Activities.Queries;
+using Application.Activities.Validators;
 using Application.Core;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -16,11 +18,19 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 // 註冊 CORS（跨來源資源共享）服務，讓 API 可以接受來自不同網域的請求（例如前端在 localhost:3000）
 builder.Services.AddCors();
 
-// 註冊 MediatR，並從 GetActivityList.Handler 所在的 Assembly 掃描所有的 Handler，自動加入 DI 容器
-builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<GetActivityList.Handler>());
+// 註冊 MediatR，從 GetActivityList.Handler 所在的組件中掃描並註冊所有 Handler
+// 同時加入 ValidationBehavior 作為通用的 Pipeline 行為，用於自動處理所有請求的驗證
+builder.Services.AddMediatR(x =>
+{
+    x.RegisterServicesFromAssemblyContaining<GetActivityList.Handler>();
+    x.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
 
 // 註冊 AutoMapper，從 MappingProfiles 所在的 Assembly 掃描所有的 Mapping 設定檔（Profile 類別）
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
+// 註冊 FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityValidator>();
 
 var app = builder.Build();
 

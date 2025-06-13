@@ -5,6 +5,7 @@ import ActivityDashboard from "../../features/activities/dashboard/ActivityDashb
 import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetailPage from "../../features/activities/details/ActivityDetailPage";
 import Counter from "../../features/counter/Counter";
+import TestErrors from "../../features/errors/TestErrors";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
       {
         path: "counter",
         element: <Counter />
+      },
+      {
+        path: "errors",
+        element: <TestErrors />
       }
     ]
   }

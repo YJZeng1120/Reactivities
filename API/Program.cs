@@ -1,3 +1,4 @@
+using API.Middleware;
 using Application.Activities.Queries;
 using Application.Activities.Validators;
 using Application.Core;
@@ -32,9 +33,13 @@ builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 // 註冊 FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityValidator>();
 
+// 註冊自訂的 ExceptionMiddleware 作為 Transient（每次請求都會建立新實例）
+builder.Services.AddTransient<ExceptionMiddleware>();
+
 var app = builder.Build();
 
-
+// 加入自訂的 ExceptionMiddleware 到中介軟體管線中，需放在其他中介軟體之前才能正確攔截錯誤
+app.UseMiddleware<ExceptionMiddleware>();
 // Configure the HTTP request pipeline.
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000", "https://localhost:3000"));
 

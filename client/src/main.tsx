@@ -19,7 +19,11 @@ createRoot(document.getElementById("root")!).render(
     <StoreContext.Provider value={store}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-        <ToastContainer />
+        <ToastContainer
+          position="bottom-right"
+          hideProgressBar
+          theme="colored"
+        />
         <RouterProvider router={router} />
       </QueryClientProvider>
     </StoreContext.Provider>

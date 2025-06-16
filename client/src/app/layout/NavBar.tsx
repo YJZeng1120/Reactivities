@@ -47,6 +47,7 @@ export default function NavBar() {
               <MenuItemLink to="/createActivity">Create Activity</MenuItemLink>
               <MenuItemLink to="/counter">Counter</MenuItemLink>
               <MenuItemLink to="/errors">Errors</MenuItemLink>
+              <MenuItemLink to="/web-socket">WebSocketDemo</MenuItemLink>
             </Box>
             <MenuItem>User menu</MenuItem>
           </Toolbar>

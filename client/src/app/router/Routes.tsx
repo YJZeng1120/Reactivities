@@ -9,6 +9,7 @@ import TestErrors from "../../features/errors/TestErrors";
 import NotFound from "../../features/errors/NotFound";
 import WebSocketDemo from "../../features/webSocket/WebSocketDemo";
 import ServerError from "../../features/errors/ServerError";
+import TableDemo from "../../features/tableDemo/TableDemo";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
       {
         path: "web-socket",
         element: <WebSocketDemo />
+      },
+      {
+        path: "table-demo",
+        element: <TableDemo />
       }
     ]
   }

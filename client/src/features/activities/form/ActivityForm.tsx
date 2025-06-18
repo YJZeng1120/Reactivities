@@ -1,32 +1,42 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import { type FormEvent } from "react";
 import { useActivities } from "../../../lib/hooks/useActivities";
 import { useNavigate, useParams } from "react-router";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { activitySchema, type ActivitySchema } from "../../../lib/schemas/activitySchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function ActivityForm() {
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<ActivitySchema>({
+    mode: "onTouched",
+    resolver: zodResolver(activitySchema)
+  });
   const { id } = useParams();
   const { updateActivity, createActivity, activity, isLoadingActivity } = useActivities(id);
   const navigate = useNavigate();
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data: { [key: string]: FormDataEntryValue } = {};
-
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
+  useEffect(() => {
     if (activity) {
-      data.id = activity.id;
-      await updateActivity.mutateAsync(data as unknown as Activity);
-      navigate(`/activities/${activity.id}`);
-    } else {
-      createActivity.mutate(data as unknown as Activity, {
-        onSuccess: (id) => {
-          navigate(`/activities/${id}`);
-        }
-      });
+      reset(activity);
+      // reset({
+      //   title: activity.title,
+      //   description: activity.description,
+      //   category: activity.category,
+      //   date: activity.date
+      //     ? new Date(activity.date).toISOString().split("T")[0]
+      //     : new Date().toISOString().split("T")[0],
+      //   city: activity.city,
+      //   venue: activity.venue
+      // });
     }
+  }, [activity, reset]);
+
+  const onSubmit = async (data: ActivitySchema) => {
+    console.log("Form submitted with data:", data);
   };
 
   if (isLoadingActivity) {
@@ -44,30 +54,32 @@ export default function ActivityForm() {
       </Typography>
       <Box
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         display="flex"
         flexDirection="column"
         gap={3}
       >
         <TextField
-          name="title"
+          {...register("title")}
           label="Title"
           defaultValue={activity?.title}
+          error={!!errors.title}
+          helperText={errors.title?.message}
         />
         <TextField
-          name="description"
+          {...register("description")}
           label="Description"
           defaultValue={activity?.description}
           multiline
           rows={3}
         />
         <TextField
-          name="category"
+          {...register("category")}
           label="Category"
           defaultValue={activity?.category}
         />
         <TextField
-          name="date"
+          {...register("date")}
           label="Date"
           defaultValue={
             activity?.date
@@ -77,12 +89,12 @@ export default function ActivityForm() {
           type="date"
         />
         <TextField
-          name="city"
+          {...register("city")}
           label="City"
           defaultValue={activity?.city}
         />
         <TextField
-          name="venue"
+          {...register("venue")}
           label="Venue"
           defaultValue={activity?.venue}
         />

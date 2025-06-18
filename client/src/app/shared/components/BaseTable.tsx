@@ -9,7 +9,7 @@ interface BaseTableProps<T> {
   table: ReturnType<typeof useReactTable<T>>;
 }
 
-export function BaseTable<T>({ table, height = 40, maxHeight = 900 }: BaseTableProps<T>) {
+export function BaseTable<T>({ table, height = 40, maxHeight = 700 }: BaseTableProps<T>) {
   const parentRef = useRef<HTMLDivElement>(null);
   const rows = table.getRowModel().rows;
 

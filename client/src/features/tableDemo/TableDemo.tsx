@@ -3,16 +3,46 @@ import { BaseTable } from "../../app/shared/components/BaseTable";
 import {
   getCoreRowModel,
   getExpandedRowModel,
+  getFilteredRowModel,
   useReactTable,
+  type CellContext,
   type ColumnDef,
-  type ExpandedState
+  type ExpandedState,
+  type FilterFn
 } from "@tanstack/react-table";
 
 import { IconButton } from "@mui/material";
 
+const globalFilterFnComplete: FilterFn<DataItem | User> = (row, columnId, filterValue) => {
+  const original = row.original;
+  const searchTexts: string[] = [];
+
+  if (row.depth === 0) {
+    // 父列 - 搜尋 role title
+    if ("role" in original) {
+      searchTexts.push(original.role.title);
+    }
+  } else {
+    // 子列 - 搜尋所有使用者資訊
+    if ("name" in original) {
+      searchTexts.push(
+        original.name.title,
+        original.department,
+        original.email,
+        original.extension
+      );
+    }
+  }
+
+  const haystack = searchTexts.filter(Boolean).join(" ").toLowerCase();
+  const needle = filterValue.toLowerCase();
+
+  return haystack.includes(needle);
+};
 export default function TableDemo() {
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   const columns = React.useMemo<ColumnDef<DataItem | User>[]>(
     () => [
@@ -41,7 +71,9 @@ export default function TableDemo() {
       {
         id: "role",
         header: "Role / Principal",
-        cell: ({ row }) => {
+        accessorFn: (row) => ("role" in row ? row.role.title : ""),
+        cell: (cellContext) => {
+          const { row } = cellContext;
           if (row.depth === 0) {
             return (
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -52,34 +84,46 @@ export default function TableDemo() {
                 ) : (
                   <span style={{ width: "2rem" }} />
                 )}
-                {row.original && "role" in row.original ? row.original.role.title : null}
+                <HighlightCell {...cellContext} />
               </div>
             );
           } else {
-            return "name" in row.original ? (
-              <div style={{ textAlign: "right" }}>{row.original.name.title}</div>
-            ) : null;
+            const nameTitle =
+              "name" in cellContext.row.original ? cellContext.row.original.name.title : "";
+            return (
+              <div style={{ textAlign: "right" }}>
+                <HighlightCell
+                  {...cellContext}
+                  value={nameTitle}
+                />
+              </div>
+            );
           }
         }
       },
-
       {
+        accessorKey: "department",
         header: "Department",
         accessorFn: (row) => ("department" in row ? row.department : ""),
-        cell: (info) => info.getValue()
+        cell: (cellContext) => <HighlightCell {...cellContext} />
       },
       {
+        accessorKey: "email",
         header: "Email",
         accessorFn: (row) => ("email" in row ? row.email : ""),
-        cell: (info) => info.getValue()
+        cell: (cellContext) => <HighlightCell {...cellContext} />
       },
       {
+        accessorKey: "extension",
         header: "Extension",
         accessorFn: (row) => ("extension" in row ? row.extension : ""),
-        cell: ({ row, getValue }) => (
+        cell: (cellContext) => (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span>{getValue() as string}</span>
-            {row.depth > 0 && <IconButton onClick={() => {}}>📝</IconButton>}
+            <HighlightCell
+              {...cellContext}
+              value={cellContext.getValue() as string}
+            />
+            {cellContext.row.depth > 0 && <IconButton onClick={() => {}}>📝</IconButton>}
           </div>
         )
       }
@@ -92,17 +136,32 @@ export default function TableDemo() {
     columns,
     state: {
       expanded,
-      rowSelection
+      rowSelection,
+      globalFilter
     },
     getSubRows: (row) => ("users" in row ? row.users : undefined),
     onExpandedChange: setExpanded,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: globalFilterFnComplete,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    debugTable: true
+    getFilteredRowModel: getFilteredRowModel(),
+    filterFromLeafRows: true
   });
 
-  return <BaseTable table={table} />;
+  return (
+    <>
+      <input
+        type="text"
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        placeholder="Search all columns..."
+        style={{ marginBottom: 12, padding: 8, width: 280 }}
+      />
+      <BaseTable table={table} />
+    </>
+  );
 }
 
 function IndeterminateCheckbox({
@@ -126,6 +185,29 @@ function IndeterminateCheckbox({
       {...rest}
     />
   );
+}
+
+function HighlightCell<TData, TValue>(context: CellContext<TData, TValue> & { value?: string }) {
+  const rawValue = context.value ?? context.cell.getValue();
+  const value = rawValue == null ? "" : String(rawValue);
+  const search = context.table.getState().globalFilter as string;
+
+  if (!search) return <span>{value}</span>;
+
+  const regex = new RegExp(`(${escapeRegExp(search)})`, "gi");
+  const parts = value.split(regex);
+
+  return (
+    <span>
+      {parts.map((part, idx) =>
+        regex.test(part) ? <mark key={idx}>{part}</mark> : <span key={idx}>{part}</span>
+      )}
+    </span>
+  );
+}
+
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 const mockData: DataItem[] = [

@@ -59,7 +59,7 @@ var app = builder.Build();
 // 加入自訂的 ExceptionMiddleware 到中介軟體管線中，需放在其他中介軟體之前才能正確攔截錯誤
 app.UseMiddleware<ExceptionMiddleware>();
 // Configure the HTTP request pipeline.
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000", "https://localhost:3000"));
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000", "https://localhost:3000"));
 
 // 身份驗證（辨識用戶是誰，建立 HttpContext.User）
 app.UseAuthentication();

@@ -10,6 +10,7 @@ import NotFound from "../../features/errors/NotFound";
 import WebSocketDemo from "../../features/webSocket/WebSocketDemo";
 import ServerError from "../../features/errors/ServerError";
 import TableDemo from "../../features/tableDemo/TableDemo";
+import LoginForm from "../../features/account/LoginForm";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
       {
         path: "server-error",
         element: <ServerError />
+      },
+      {
+        path: "login",
+        element: <LoginForm />
       },
       {
         path: "*",

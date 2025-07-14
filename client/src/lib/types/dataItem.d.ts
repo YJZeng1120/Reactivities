@@ -3,7 +3,7 @@ interface Name {
   title: string;
 }
 
-interface User {
+interface Staff {
   name: Name;
   department: string;
   email: string;
@@ -18,5 +18,5 @@ interface Role {
 
 interface DataItem {
   role: Role;
-  users: User[];
+  users: Staff[];
 }

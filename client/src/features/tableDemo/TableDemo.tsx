@@ -13,7 +13,7 @@ import {
 import { IconButton } from "@mui/material";
 import viewByRoleExample from "../../assets/view_by_role_example.json";
 
-const globalFilterFnComplete: FilterFn<DataItem | User> = (row, columnId, filterValue) => {
+const globalFilterFnComplete: FilterFn<DataItem | Staff> = (row, columnId, filterValue) => {
   const original = row.original;
   const searchTexts: string[] = [];
 
@@ -44,7 +44,7 @@ export default function TableDemo() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
-  const columns = React.useMemo<ColumnDef<DataItem | User>[]>(
+  const columns = React.useMemo<ColumnDef<DataItem | Staff>[]>(
     () => [
       {
         id: "select",

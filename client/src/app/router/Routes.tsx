@@ -11,6 +11,8 @@ import WebSocketDemo from "../../features/webSocket/WebSocketDemo";
 import ServerError from "../../features/errors/ServerError";
 import TableDemo from "../../features/tableDemo/TableDemo";
 import LoginForm from "../../features/account/LoginForm";
+import RequireAuth from "./RequireAuth";
+import RegisterForm from "../../features/account/RegisterForm";
 
 export const router = createBrowserRouter([
   {
@@ -18,24 +20,29 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       {
+        element: <RequireAuth />,
+        children: [
+          {
+            path: "activities",
+            element: <ActivityDashboard />
+          },
+          {
+            path: "activities/:id",
+            element: <ActivityDetailPage />
+          },
+          {
+            path: "createActivity",
+            element: <ActivityForm key="create" />
+          },
+          {
+            path: "manage/:id",
+            element: <ActivityForm />
+          }
+        ]
+      },
+      {
         path: "",
         element: <HomePage />
-      },
-      {
-        path: "activities",
-        element: <ActivityDashboard />
-      },
-      {
-        path: "activities/:id",
-        element: <ActivityDetailPage />
-      },
-      {
-        path: "createActivity",
-        element: <ActivityForm key="create" />
-      },
-      {
-        path: "manage/:id",
-        element: <ActivityForm />
       },
       {
         path: "counter",
@@ -56,6 +63,10 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginForm />
+      },
+      {
+        path: "register",
+        element: <RegisterForm />
       },
       {
         path: "*",

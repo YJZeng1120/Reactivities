@@ -69,6 +69,7 @@ export default function ActivityDetailsInfo({ activity }: Props) {
             {activity.venue}, {activity.city}
           </Typography>
           <Button
+            sx={{ whiteSpace: "nowrap", mx: 2 }}
             onClick={() => {
               setMapOpen(!mapOpen);
             }}
